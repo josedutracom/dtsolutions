@@ -197,11 +197,11 @@
         <li>Controle de estoque de peças</li>
         <li>Histórico de serviços por veículo</li>
       </ul>
-      <a class="card-link disabled" style="opacity:0.4;cursor:not-allowed;pointer-events:none;">Em manutenção</a>
+      <a href="https://dtorque.dutraonline.com.br" class="card-link" target="_blank">Acessar sistema</a>
     </div>
 
     <div class="card">
-      <span class="card-badge badge-live">✓ Ativo</span>
+      <span class="card-badge badge-beta">Beta</span>
       <div class="card-icon">🏫</div>
       <h3>DTSchool</h3>
       <div class="card-subtitle">Gestão Escolar</div>
@@ -233,12 +233,99 @@
   </div>
 </section>
 
-<footer id="contato">
+<!-- CONTATO -->
+<section style="background:var(--light);border-top:1px solid var(--border);padding:80px 48px;" id="contato">
+  <div style="max-width:600px;margin:0 auto;text-align:center;">
+    <div class="section-label" style="font-size:0.75rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--accent);margin-bottom:14px;">Contato</div>
+    <h2 style="font-family:'Syne',sans-serif;font-size:clamp(1.8rem,3vw,2.4rem);font-weight:800;color:var(--dark);letter-spacing:-0.5px;margin-bottom:12px;">Fale com a gente</h2>
+    <p style="color:var(--mid);margin-bottom:40px;">Tem alguma dúvida, sugestão ou quer saber mais sobre nossos sistemas? Deixe sua mensagem!</p>
+
+    <div id="form-contato" style="display:flex;flex-direction:column;gap:16px;text-align:left;">
+      <div>
+        <label style="font-size:0.82rem;font-weight:600;color:var(--dark);display:block;margin-bottom:6px;">Nome <span style="color:#E24B4A;">*</span></label>
+        <input id="c-nome" type="text" placeholder="Seu nome" maxlength="100"
+          style="width:100%;padding:11px 14px;border:1.5px solid var(--border);border-radius:9px;font-size:0.9rem;font-family:'DM Sans',sans-serif;color:var(--dark);outline:none;transition:border-color 0.2s;"
+          onfocus="this.style.borderColor='var(--teal)'" onblur="this.style.borderColor='var(--border)'">
+      </div>
+      <div>
+        <label style="font-size:0.82rem;font-weight:600;color:var(--dark);display:block;margin-bottom:6px;">E-mail</label>
+        <input id="c-email" type="email" placeholder="seuemail@exemplo.com" maxlength="100"
+          style="width:100%;padding:11px 14px;border:1.5px solid var(--border);border-radius:9px;font-size:0.9rem;font-family:'DM Sans',sans-serif;color:var(--dark);outline:none;transition:border-color 0.2s;"
+          onfocus="this.style.borderColor='var(--teal)'" onblur="this.style.borderColor='var(--border)'">
+      </div>
+      <div>
+        <label style="font-size:0.82rem;font-weight:600;color:var(--dark);display:block;margin-bottom:6px;">Mensagem <span style="color:#E24B4A;">*</span></label>
+        <textarea id="c-mensagem" placeholder="Sua mensagem..." maxlength="500" rows="4"
+          style="width:100%;padding:11px 14px;border:1.5px solid var(--border);border-radius:9px;font-size:0.9rem;font-family:'DM Sans',sans-serif;color:var(--dark);outline:none;resize:vertical;transition:border-color 0.2s;"
+          onfocus="this.style.borderColor='var(--teal)'" onblur="this.style.borderColor='var(--border)'"></textarea>
+      </div>
+      <div id="c-msg" style="display:none;padding:12px 16px;border-radius:9px;font-size:0.875rem;font-weight:600;text-align:center;"></div>
+      <button onclick="enviarContato()" id="c-btn"
+        style="background:var(--teal);color:var(--white);border:none;padding:14px;border-radius:9px;font-family:'DM Sans',sans-serif;font-size:0.95rem;font-weight:700;cursor:pointer;transition:background 0.2s;">
+        Enviar mensagem
+      </button>
+    </div>
+  </div>
+</section>
+
+<script>
+async function enviarContato() {
+  const nome = document.getElementById('c-nome').value.trim();
+  const email = document.getElementById('c-email').value.trim();
+  const mensagem = document.getElementById('c-mensagem').value.trim();
+  const msg = document.getElementById('c-msg');
+  const btn = document.getElementById('c-btn');
+
+  if (!nome || !mensagem) {
+    msg.style.display = 'block';
+    msg.style.background = '#FEE2E2';
+    msg.style.color = '#B91C1C';
+    msg.textContent = 'Por favor preencha nome e mensagem.';
+    return;
+  }
+
+  btn.disabled = true;
+  btn.textContent = 'Enviando...';
+
+  try {
+    const res = await fetch('https://ohoynmhechpbisiabyms.supabase.co/rest/v1/contatos', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'apikey': 'sb_publishable_MIS909tDSAh4HHZ4lb07Pw_U9jXy6Ci',
+        'Authorization': 'Bearer sb_publishable_MIS909tDSAh4HHZ4lb07Pw_U9jXy6Ci',
+        'Prefer': 'return=minimal'
+      },
+      body: JSON.stringify({ nome, email, mensagem })
+    });
+
+    if (res.ok) {
+      document.getElementById('form-contato').innerHTML = `
+        <div style="text-align:center;padding:40px 0;">
+          <div style="font-size:2.5rem;margin-bottom:16px;">✅</div>
+          <h3 style="font-family:'Syne',sans-serif;font-size:1.3rem;font-weight:800;color:var(--dark);margin-bottom:8px;">Mensagem enviada!</h3>
+          <p style="color:var(--mid);">Obrigado pelo contato. Responderemos em breve!</p>
+        </div>`;
+    } else {
+      throw new Error('Erro ao enviar');
+    }
+  } catch(e) {
+    msg.style.display = 'block';
+    msg.style.background = '#FEE2E2';
+    msg.style.color = '#B91C1C';
+    msg.textContent = 'Erro ao enviar. Tente novamente.';
+    btn.disabled = false;
+    btn.textContent = 'Enviar mensagem';
+  }
+}
+</script>
+
+<footer style="background:var(--dark);" id="rodape">
   <strong>DTSolutions</strong> — Plataforma de Soluções Empresariais
   <div class="footer-links">
     <a href="#sobre">Sobre</a>
     <a href="#produtos">Produtos</a>
-    <a href="mailto:contato@dutraonline.com.br"></a>
+    <a href="mailto:contato@dutraonline.com.br">contato@dutraonline.com.br</a>
   </div>
   <p style="margin-top:20px;font-size:0.75rem;opacity:0.4;">© 2025 DTSolutions. Todos os direitos reservados.</p>
 </footer>
